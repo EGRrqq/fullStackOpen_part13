@@ -44,6 +44,15 @@ app.get('/api/blogs', async (req, res) => {
     res.json(blogs)
 })
 
+app.post('/api/blogs', async (req, res) => {
+    try{
+      const blog = await Blog.create(req.body)
+      return res.json(blog)    
+    } catch(error) {
+      return res.status(400).json({ error })
+    }
+})
+
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {  
   console.log(`Server running on port ${PORT}`)
