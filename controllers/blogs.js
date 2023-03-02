@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const { Blog } = require('../models')
 
-const blogFinder = async (req,res,next) => {
+const blogFinder = async (req, res, next) => {
   req.blog = await Blog.findByPk(req.params.id)
   next()
 }
@@ -9,16 +9,11 @@ const blogFinder = async (req,res,next) => {
 router.get('/', async (req, res) => {
   const blogs = await Blog.findAll()
   res.json(blogs)
-  blogs.forEach(blog=> {
-    console.log(`${blog.author}: "${blog.title}", ${blog.likes} likes`)
-  })
 })
 
 router.post('/', async (req, res) => {
     const blog = await Blog.create(req.body)
     res.json(blog)
-
-    return res.status(400).json({ error })
 })
 
 router.get('/:id', blogFinder, async (req, res) => {
