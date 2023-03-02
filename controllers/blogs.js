@@ -32,21 +32,26 @@ router.get('/:id', blogFinder, async (req, res) => {
   }
 })
 
-router.delete('/:id', blogFinder, async (req, res) => {
+router.delete('/:id', tokenExtractor, blogFinder, async (req, res) => {
+  const user = await User.findByPk(req.decodedToken.id)
   if (req.blog) {
-    await req.blog.destroy()
+    if (user.id===req.blog.userId) {    
+      await req.blog.destroy()
+      res.status(204).end()
+    } else {
+      res.status(401).send("deleting a blog is only possible for the user who added the blog").end()
+    }
   }
-  res.status(204).end()
 })
 
 router.put('/:id', blogFinder, async (req, res) => {
-    if (req.blog) {
-        req.blog.likes = req.body.likes
-        await req.blog.save()
-        res.json(req.blog)
-    } else {
-      res.status(404).end()
-    }
+  if (req.blog) {
+      req.blog.likes = req.body.likes
+      await req.blog.save()
+      res.json(req.blog)
+  } else {
+    res.status(404).end()
+  }
 })
 
 module.exports = router
