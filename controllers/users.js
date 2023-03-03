@@ -17,22 +17,38 @@ router.post('/', async (req, res) => {
 })
 
 router.get('/:id', async (req, res) => {
-  const user = await User.findByPk(req.params.id, {
-    include: {
-      model: Blog,
-      as: 'readings',
-      attributes: {exclude: ['userId', 'createdAt', 'updatedAt']},
-      through: {
-        attributes: ['id','read']
-      }
-    },
-    attributes: {
-      exclude: ['createdAt', 'updatedAt']
-    }
-  })
-
-  if (user) {
-    res.json(user)
+  if (req.query.read) {
+    req.user = await User.findByPk(req.params.id,
+      {
+        include: {
+          model: Blog,
+          as: 'readings',
+          attributes: {exclude: ['userId', 'createdAt', 'updatedAt']},
+          through: {
+            where: {read:req.query.read},
+            attributes: ['id','read']
+          },          
+        },
+      })
+  } else {
+    req.user = await User.findByPk(req.params.id,
+      {
+        include: {
+          model: Blog,
+          as: 'readings',
+          attributes: {exclude: ['userId', 'createdAt', 'updatedAt']},
+          through: {
+            attributes: ['id','read']
+          }
+        },
+        attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }
+      })
+  }
+  
+  if (req.user) {
+    res.json(req.user)
   } else {
     res.status(404).end()
   }
