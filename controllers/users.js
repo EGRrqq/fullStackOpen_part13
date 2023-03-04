@@ -17,8 +17,9 @@ router.post('/', async (req, res) => {
 })
 
 router.get('/:id', async (req, res) => {
+  let  user = null
   if (req.query.read) {
-    req.user = await User.findByPk(req.params.id,
+    user = await User.findByPk(req.params.id,
       {
         include: {
           model: Blog,
@@ -31,7 +32,7 @@ router.get('/:id', async (req, res) => {
         },
       })
   } else {
-    req.user = await User.findByPk(req.params.id,
+    user = await User.findByPk(req.params.id,
       {
         include: {
           model: Blog,
@@ -47,8 +48,8 @@ router.get('/:id', async (req, res) => {
       })
   }
   
-  if (req.user) {
-    res.json(req.user)
+  if (user) {
+    res.json(user)
   } else {
     res.status(404).end()
   }
